@@ -1,4 +1,9 @@
 package joaopldantas.project.dto.documento;
 
-public class AtualizarNomeDocumentoDTO {
-}
+import jakarta.validation.constraints.NotBlank;
+
+public record AtualizarNomeDocumentoDTO(
+
+        @NotBlank(message = "Nome é obrigatório")
+        String nome
+) {}

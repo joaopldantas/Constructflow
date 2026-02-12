@@ -1,4 +1,15 @@
 package joaopldantas.project.dto.documento;
 
-public class DocumentoResponseDTO {
-}
+import joaopldantas.project.entities.enums.StatusDocumento;
+import joaopldantas.project.entities.enums.TipoDocumento;
+
+import java.time.LocalDateTime;
+
+public record DocumentoResponseDTO(
+        Long id,
+        String nome,
+        TipoDocumento tipo,
+        StatusDocumento status,
+        LocalDateTime dataUpload,
+        Long obraId
+) {}

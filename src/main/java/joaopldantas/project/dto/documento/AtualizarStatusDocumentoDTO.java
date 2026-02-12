@@ -1,4 +1,10 @@
 package joaopldantas.project.dto.documento;
 
-public class AtualizarStatusDocumentoDTO {
-}
+import joaopldantas.project.entities.enums.StatusDocumento;
+import jakarta.validation.constraints.NotNull;
+
+public record AtualizarStatusDocumentoDTO(
+
+        @NotNull(message = "Status é obrigatório")
+        StatusDocumento status
+) {}
