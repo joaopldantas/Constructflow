@@ -1,7 +1,7 @@
 package joaopldantas.project.entities;
 
 import jakarta.persistence.*;
-import joaopldantas.project.enums.StatusObra;
+import joaopldantas.project.entities.enums.StatusObra;
 import lombok.*;
 
 import java.util.ArrayList;

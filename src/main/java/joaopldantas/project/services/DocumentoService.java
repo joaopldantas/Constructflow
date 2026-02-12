@@ -1,7 +1,7 @@
 package joaopldantas.project.services;
 
 import joaopldantas.project.entities.Documento;
-import joaopldantas.project.enums.StatusDocumento;
+import joaopldantas.project.entities.enums.StatusDocumento;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +15,5 @@ public interface DocumentoService {
     List<Documento> listarPorObraEStatus(Long obraId, StatusDocumento status);
     Documento atualizarStatus(Long documentoId, StatusDocumento novoStatus);
     Documento atualizarNome(Long documentoId, String novoNome);
-
     void deletarDocumento(Long documentoId);
 }

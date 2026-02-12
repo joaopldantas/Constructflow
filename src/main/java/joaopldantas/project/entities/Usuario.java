@@ -1,7 +1,7 @@
 package joaopldantas.project.entities;
 
 import jakarta.persistence.*;
-import joaopldantas.project.enums.Papel;
+import joaopldantas.project.entities.enums.Papel;
 import lombok.*;
 
 @Getter

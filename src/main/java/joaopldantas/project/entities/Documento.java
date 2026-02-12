@@ -1,8 +1,8 @@
 package joaopldantas.project.entities;
 
 import jakarta.persistence.*;
-import joaopldantas.project.enums.StatusDocumento;
-import joaopldantas.project.enums.TipoDocumento;
+import joaopldantas.project.entities.enums.StatusDocumento;
+import joaopldantas.project.entities.enums.TipoDocumento;
 import java.time.LocalDateTime;
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package joaopldantas.project.services;
 
 import joaopldantas.project.entities.Obra;
-import joaopldantas.project.enums.StatusObra;
+import joaopldantas.project.entities.enums.StatusObra;
 import java.util.List;
 import java.util.Optional;
 

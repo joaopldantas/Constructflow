@@ -1,7 +1,7 @@
 package joaopldantas.project.repositories;
 
 import joaopldantas.project.entities.Documento;
-import joaopldantas.project.enums.StatusDocumento;
+import joaopldantas.project.entities.enums.StatusDocumento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

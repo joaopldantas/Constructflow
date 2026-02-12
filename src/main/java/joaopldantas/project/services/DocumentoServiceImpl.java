@@ -3,7 +3,7 @@ package joaopldantas.project.services;
 import jakarta.persistence.EntityNotFoundException;
 import joaopldantas.project.entities.Documento;
 import joaopldantas.project.entities.Obra;
-import joaopldantas.project.enums.StatusDocumento;
+import joaopldantas.project.entities.enums.StatusDocumento;
 import joaopldantas.project.repositories.DocumentoRepository;
 import joaopldantas.project.repositories.ObraRepository;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package joaopldantas.project.controllers;
 
 import joaopldantas.project.entities.Obra;
-import joaopldantas.project.enums.StatusObra;
+import joaopldantas.project.entities.enums.StatusObra;
 import joaopldantas.project.services.ObraService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,12 +43,30 @@ public class ObraController {
         return ResponseEntity.ok(obraService.listarPorStatus(status));
     }
 
+    @PutMapping("/{obraId}/status")
+    public ResponseEntity<Obra> atualizarStatus(
+            @PathVariable Long obraId,
+            @RequestBody StatusObra novoStatus) {
+
+        Obra atualizada = obraService.atualizarStatus(obraId, novoStatus);
+        return ResponseEntity.ok(atualizada);
+    }
+
     @PostMapping("/{obraId}/usuarios/{usuarioId}")
     public ResponseEntity<Obra> adicionarUsuario(
             @PathVariable Long obraId,
             @PathVariable Long usuarioId) {
 
         Obra atualizada = obraService.adicionarUsuarioNaObra(obraId, usuarioId);
+        return ResponseEntity.ok(atualizada);
+    }
+
+    @DeleteMapping("/{obraId}/usuarios/{usuarioId}")
+    public ResponseEntity<Obra> removerUsuarioDaObra(
+            @PathVariable Long obraId,
+            @PathVariable Long usuarioId) {
+
+        Obra atualizada = obraService.removerUsuarioDaObra(obraId, usuarioId);
         return ResponseEntity.ok(atualizada);
     }
 

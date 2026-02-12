@@ -1,4 +1,4 @@
-package joaopldantas.project.enums;
+package joaopldantas.project.entities.enums;
 
 public enum TipoDocumento {
     ORCAMENTO,
