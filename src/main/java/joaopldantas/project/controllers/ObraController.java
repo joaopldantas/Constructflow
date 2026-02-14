@@ -45,7 +45,7 @@ public class ObraController {
     @PatchMapping("/{obraId}/status")
     public ResponseEntity<ObraResponseDTO> atualizarStatus(
             @PathVariable Long obraId,
-            @RequestBody AtualizarStatusObraDTO dto) {
+            @Valid @RequestBody AtualizarStatusObraDTO dto) {
 
         return ResponseEntity.ok(obraService.atualizarStatus(obraId, dto));
     }
@@ -53,7 +53,7 @@ public class ObraController {
     @PatchMapping("/{obraId}")
     public ResponseEntity<ObraResponseDTO> atualizarObra(
             @PathVariable Long obraId,
-            @RequestBody AtualizarObraDTO dto) {
+            @Valid @RequestBody AtualizarObraDTO dto) {
 
         return ResponseEntity.ok(obraService.atualizar(obraId, dto));
     }

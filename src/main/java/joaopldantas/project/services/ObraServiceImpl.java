@@ -5,6 +5,7 @@ import joaopldantas.project.dto.obra.*;
 import joaopldantas.project.entities.Obra;
 import joaopldantas.project.entities.Usuario;
 import joaopldantas.project.entities.enums.StatusObra;
+import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.ObraRepository;
 import joaopldantas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,13 @@ public class ObraServiceImpl implements ObraService {
 
     @Override
     public ObraResponseDTO criar(CriarObraDTO dto) {
-
         Usuario responsavel = usuarioRepository.findById(dto.responsavelId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuário responsável não encontrado"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário responsável não encontrado"));
+
+        if (dto.status() == null) {
+            throw new BusinessException("Status da obra é obrigatório");
+        }
 
         Obra obra = new Obra();
         obra.setNome(dto.nome());
@@ -43,7 +48,9 @@ public class ObraServiceImpl implements ObraService {
     @Override
     public ObraResponseDTO buscarPorId(Long id) {
         Obra obra = obraRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Obra não encontrada"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Obra não encontrada"));
+
         return toResponseDTO(obra);
     }
 
@@ -105,41 +112,51 @@ public class ObraServiceImpl implements ObraService {
 
     @Override
     public ObraResponseDTO adicionarUsuarioNaObra(Long obraId, Long usuarioId) {
-
         Obra obra = obraRepository.findById(obraId)
-                .orElseThrow(() -> new EntityNotFoundException("Obra não encontrada"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Obra não encontrada"));
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário não encontrado"));
+
+        if (obra.getUsuarios().contains(usuario)) {
+            throw new BusinessException("Usuário já está vinculado a esta obra");
+        }
 
         obra.getUsuarios().add(usuario);
-
         obraRepository.save(obra);
-
         return toResponseDTO(obra);
     }
 
     @Override
     public ObraResponseDTO removerUsuarioDaObra(Long obraId, Long usuarioId) {
-
         Obra obra = obraRepository.findById(obraId)
-                .orElseThrow(() -> new EntityNotFoundException("Obra não encontrada"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Obra não encontrada"));
 
-        obra.getUsuarios().removeIf(u -> u.getId().equals(usuarioId));
+        boolean removido = obra.getUsuarios()
+                .removeIf(u -> u.getId().equals(usuarioId));
+
+        if (!removido) {
+            throw new BusinessException("Usuário não está vinculado a esta obra");
+        }
 
         obraRepository.save(obra);
-
         return toResponseDTO(obra);
     }
 
     @Override
     public ObraResponseDTO atualizarStatus(Long obraId, AtualizarStatusObraDTO dto) {
-
         Obra obra = obraRepository.findById(obraId)
-                .orElseThrow(() -> new EntityNotFoundException("Obra não encontrada"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Obra não encontrada"));
+
+        if (dto.status() == null) {
+            throw new BusinessException("Status não pode ser nulo");
+        }
 
         obra.setStatus(dto.status());
-
         obraRepository.save(obra);
 
         return toResponseDTO(obra);
@@ -147,9 +164,9 @@ public class ObraServiceImpl implements ObraService {
 
     @Override
     public ObraResponseDTO atualizar(Long obraId, AtualizarObraDTO dto) {
-
         Obra obra = obraRepository.findById(obraId)
-                .orElseThrow(() -> new EntityNotFoundException("Obra não encontrada"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Obra não encontrada"));
 
         if (dto.nome() != null) obra.setNome(dto.nome());
         if (dto.endereco() != null) obra.setEndereco(dto.endereco());
@@ -157,7 +174,8 @@ public class ObraServiceImpl implements ObraService {
 
         if (dto.responsavelId() != null) {
             Usuario responsavel = usuarioRepository.findById(dto.responsavelId())
-                    .orElseThrow(() -> new EntityNotFoundException("Usuário responsável não encontrado"));
+                    .orElseThrow(() ->
+                            new EntityNotFoundException("Usuário responsável não encontrado"));
             obra.setResponsavel(responsavel);
         }
 

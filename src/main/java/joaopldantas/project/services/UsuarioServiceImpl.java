@@ -1,7 +1,9 @@
 package joaopldantas.project.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import joaopldantas.project.dto.usuario.*;
 import joaopldantas.project.entities.Usuario;
+import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,16 +12,14 @@ import java.util.List;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
-
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 
     @Override
     public UsuarioResponseDTO criar(CriarUsuarioDTO dto) {
-
         if (emailJaExiste(dto.email())) {
-            throw new RuntimeException("Email já cadastrado!");
+            throw new BusinessException("Email já cadastrado!");
         }
 
         Usuario usuario = new Usuario();
@@ -36,7 +36,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public UsuarioResponseDTO buscarPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário não encontrado"));
 
         return toResponseDTO(usuario);
     }
@@ -44,7 +45,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public UsuarioResponseDTO buscarPorEmail(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário não encontrado"));
 
         return toResponseDTO(usuario);
     }
@@ -59,12 +61,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioResponseDTO atualizar(Long id, AtualizarUsuarioDTO dto) {
-
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário não encontrado"));
+
+        if (dto.email() != null && !dto.email().equals(usuario.getEmail())) {
+            if (emailJaExiste(dto.email())) {
+                throw new BusinessException("Email já cadastrado!");
+            }
+            usuario.setEmail(dto.email());
+        }
 
         if (dto.nome() != null) usuario.setNome(dto.nome());
-        if (dto.email() != null) usuario.setEmail(dto.email());
         if (dto.senha() != null) usuario.setSenhaHash(dto.senha());
         if (dto.papel() != null) usuario.setPapel(dto.papel());
 
@@ -75,9 +83,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void deletarUsuario(Long id) {
-
         if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuário não encontrado para exclusão");
+            throw new EntityNotFoundException("Usuário não encontrado para exclusão");
         }
 
         usuarioRepository.deleteById(id);
@@ -87,7 +94,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     public boolean emailJaExiste(String email) {
         return usuarioRepository.existsByEmail(email);
     }
-
     private UsuarioResponseDTO toResponseDTO(Usuario usuario) {
         return new UsuarioResponseDTO(
                 usuario.getId(),
