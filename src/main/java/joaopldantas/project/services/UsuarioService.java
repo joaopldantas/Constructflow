@@ -1,16 +1,16 @@
 package joaopldantas.project.services;
 
-import joaopldantas.project.entities.Usuario;
+import joaopldantas.project.dto.usuario.*;
+
 import java.util.List;
-import java.util.Optional;
 
 public interface UsuarioService {
 
-    Usuario criarUsuario(Usuario usuario);
-    Optional<Usuario> buscarPorId(Long id);
-    Optional<Usuario> buscarPorEmail(String email);
-    List<Usuario> listarTodos();
-    Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado);
+    UsuarioResponseDTO criar(CriarUsuarioDTO dto);
+    UsuarioResponseDTO buscarPorId(Long id);
+    UsuarioResponseDTO buscarPorEmail(String email);
+    List<UsuarioResponseDTO> listarTodos();
+    UsuarioResponseDTO atualizar(Long id, AtualizarUsuarioDTO dto);
     void deletarUsuario(Long id);
     boolean emailJaExiste(String email);
 }

@@ -1,6 +1,7 @@
 package joaopldantas.project.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import joaopldantas.project.dto.documento.*;
 import joaopldantas.project.entities.Documento;
 import joaopldantas.project.entities.Obra;
 import joaopldantas.project.entities.enums.StatusDocumento;
@@ -8,109 +9,126 @@ import joaopldantas.project.repositories.DocumentoRepository;
 import joaopldantas.project.repositories.ObraRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class DocumentoServiceImpl implements DocumentoService{
+public class DocumentoServiceImpl implements DocumentoService {
 
     private final DocumentoRepository documentoRepository;
     private final ObraRepository obraRepository;
 
-    public DocumentoServiceImpl(DocumentoRepository documentoRepository, ObraRepository obraRepository) {
+    public DocumentoServiceImpl(DocumentoRepository documentoRepository,
+                                ObraRepository obraRepository) {
         this.documentoRepository = documentoRepository;
         this.obraRepository = obraRepository;
     }
 
     @Override
-    public Documento criarDocumento(Documento documento, Long obraId) {
-        if (documento == null || obraId == null) {
-            throw new IllegalArgumentException("Documento e obraId não podem ser nulos");
-        }
+    public DocumentoResponseDTO criarDocumento(CriarDocumentoDTO dto) {
 
-        Obra obra = obraRepository.findById(obraId)
+        Obra obra = obraRepository.findById(dto.obraId())
                 .orElseThrow(() -> new EntityNotFoundException("Obra não encontrada"));
 
+        Documento documento = new Documento();
+        documento.setNome(dto.nome());
+        documento.setTipo(dto.tipo());
+        documento.setStatus(dto.status());
+        documento.setDataUpload(LocalDateTime.now());
         documento.setObra(obra);
 
-        return documentoRepository.save(documento);
-    }
+        documentoRepository.save(documento);
 
-
-    @Override
-    public Optional<Documento> buscarPorId(Long documentoId) {
-        if (documentoId == null) {
-            return Optional.empty();
-        }
-        return documentoRepository.findById(documentoId);
+        return toResponseDTO(documento);
     }
 
     @Override
-    public List<Documento> listarTodos() {
-        return documentoRepository.findAll();
+    public DocumentoResponseDTO buscarPorId(Long documentoId) {
+
+        Documento documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new EntityNotFoundException("Documento não encontrado"));
+
+        return toResponseDTO(documento);
     }
 
     @Override
-    public List<Documento> listarPorObra(Long obraId) {
-        if (obraId == null) {
-            throw new IllegalArgumentException("ID não pode ser nulo");
-        }
-        return documentoRepository.findByObraId(obraId);
+    public List<DocumentoResponseDTO> listarTodos() {
+        return documentoRepository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
     @Override
-    public List<Documento> listarPorStatus(StatusDocumento status) {
-        if (status == null) {
-            throw new IllegalArgumentException("Status não pode ser nulo");
-        }
-        return documentoRepository.findByStatus(status);
+    public List<DocumentoResponseDTO> listarPorObra(Long obraId) {
+        return documentoRepository.findByObraId(obraId)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
     @Override
-    public List<Documento> listarPorObraEStatus(Long obraId, StatusDocumento status) {
-        if (obraId == null || status == null) {
-            throw new IllegalArgumentException("ID e Status não podem ser nulos");
-        }
-        return  documentoRepository.findByObraIdAndStatus(obraId, status);
+    public List<DocumentoResponseDTO> listarPorStatus(StatusDocumento status) {
+        return documentoRepository.findByStatus(status)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
     @Override
-    public Documento atualizarStatus(Long documentoId, StatusDocumento novoStatus) {
-        if (documentoId == null || novoStatus == null) {
-            throw new IllegalArgumentException("ID e Status não podem ser nulos");
-        }
-
-        return documentoRepository.findById(documentoId)
-                .map(documento -> {
-                    documento.setStatus(novoStatus);
-                    return documentoRepository.save(documento);
-                })
-                .orElseThrow(() -> new RuntimeException("Documento não encontrado"));
+    public List<DocumentoResponseDTO> listarPorObraEStatus(Long obraId, StatusDocumento status) {
+        return documentoRepository.findByObraIdAndStatus(obraId, status)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
     @Override
-    public Documento atualizarNome(Long documentoId, String novoNome) {
-        if (documentoId == null || novoNome == null || novoNome.isBlank()) {
-            throw new IllegalArgumentException("ID e Nome não podem ser nulos ou vazios");
-        }
+    public DocumentoResponseDTO atualizarStatus(Long documentoId,
+                                                AtualizarStatusDocumentoDTO dto) {
 
-        return documentoRepository.findById(documentoId)
-                .map(documento ->{
-                    documento.setNome(novoNome);
-                    return documentoRepository.save(documento);
-                })
-                .orElseThrow(() -> new RuntimeException("Documento não encontrado"));
+        Documento documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new EntityNotFoundException("Documento não encontrado"));
+
+        documento.setStatus(dto.status());
+
+        documentoRepository.save(documento);
+
+        return toResponseDTO(documento);
+    }
+
+    @Override
+    public DocumentoResponseDTO atualizarNome(Long documentoId,
+                                              AtualizarNomeDocumentoDTO dto) {
+
+        Documento documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new EntityNotFoundException("Documento não encontrado"));
+
+        documento.setNome(dto.nome());
+
+        documentoRepository.save(documento);
+
+        return toResponseDTO(documento);
     }
 
     @Override
     public void deletarDocumento(Long documentoId) {
-        if (documentoId == null) {
-            throw new IllegalArgumentException("ID não pode ser nulo");
-        }
+
         if (!documentoRepository.existsById(documentoId)) {
             throw new EntityNotFoundException("Documento não encontrado");
         }
 
         documentoRepository.deleteById(documentoId);
+    }
+
+    private DocumentoResponseDTO toResponseDTO(Documento documento) {
+        return new DocumentoResponseDTO(
+                documento.getId(),
+                documento.getNome(),
+                documento.getTipo(),
+                documento.getStatus(),
+                documento.getDataUpload(),
+                documento.getObra().getId()
+        );
     }
 }

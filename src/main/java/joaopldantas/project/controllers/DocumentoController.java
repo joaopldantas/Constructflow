@@ -1,6 +1,7 @@
 package joaopldantas.project.controllers;
 
-import joaopldantas.project.entities.Documento;
+import jakarta.validation.Valid;
+import joaopldantas.project.dto.documento.*;
 import joaopldantas.project.entities.enums.StatusDocumento;
 import joaopldantas.project.services.DocumentoService;
 import org.springframework.http.ResponseEntity;
@@ -13,73 +14,76 @@ import java.util.List;
 public class DocumentoController {
 
     private final DocumentoService documentoService;
+
     public DocumentoController(DocumentoService documentoService) {
         this.documentoService = documentoService;
     }
 
-    @PostMapping("/obras/{obraId}")
-    public ResponseEntity<Documento> criarDocumento(
-            @RequestBody Documento documento,
-            @PathVariable Long obraId){
-        Documento criado = documentoService.criarDocumento(documento, obraId);
+    @PostMapping
+    public ResponseEntity<DocumentoResponseDTO> criarDocumento(
+            @Valid @RequestBody CriarDocumentoDTO dto) {
+
+        DocumentoResponseDTO criado = documentoService.criarDocumento(dto);
         return ResponseEntity.status(201).body(criado);
     }
 
     @GetMapping("/{documentoId}")
-    public ResponseEntity<Documento> buscarPorId(
-            @PathVariable Long documentoId){
-        return documentoService.buscarPorId(documentoId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<DocumentoResponseDTO> buscarPorId(
+            @PathVariable Long documentoId) {
+
+        return ResponseEntity.ok(documentoService.buscarPorId(documentoId));
     }
 
     @GetMapping
-    public ResponseEntity<List<Documento>> listarTodos(){
+    public ResponseEntity<List<DocumentoResponseDTO>> listarTodos() {
         return ResponseEntity.ok(documentoService.listarTodos());
     }
 
     @GetMapping("/obras/{obraId}")
-    public ResponseEntity<List<Documento>> listarPorObra(
-            @PathVariable Long obraId){
+    public ResponseEntity<List<DocumentoResponseDTO>> listarPorObra(
+            @PathVariable Long obraId) {
+
         return ResponseEntity.ok(documentoService.listarPorObra(obraId));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<Documento>> listarPorStatus(
-            @PathVariable StatusDocumento status){
+    public ResponseEntity<List<DocumentoResponseDTO>> listarPorStatus(
+            @PathVariable StatusDocumento status) {
+
         return ResponseEntity.ok(documentoService.listarPorStatus(status));
     }
 
     @GetMapping("/obras/{obraId}/status")
-    public ResponseEntity<List<Documento>> listarPorObraEStatus(
+    public ResponseEntity<List<DocumentoResponseDTO>> listarPorObraEStatus(
             @PathVariable Long obraId,
-            @RequestParam StatusDocumento status){
+            @RequestParam StatusDocumento status) {
+
         return ResponseEntity.ok(
                 documentoService.listarPorObraEStatus(obraId, status));
     }
 
-    @PutMapping("/{documentoId}/novoStatus")
-    public ResponseEntity<Documento> atualizarStatus(
+    @PutMapping("/{documentoId}/status")
+    public ResponseEntity<DocumentoResponseDTO> atualizarStatus(
             @PathVariable Long documentoId,
-            @RequestBody StatusDocumento novoStatus){
+            @Valid @RequestBody AtualizarStatusDocumentoDTO dto) {
 
-        Documento atualizado = documentoService.atualizarStatus(
-                documentoId, novoStatus);
-        return ResponseEntity.ok(atualizado);
+        return ResponseEntity.ok(
+                documentoService.atualizarStatus(documentoId, dto));
     }
 
-    @PutMapping("/{documentoId}/novoNome")
-    public ResponseEntity<Documento> atualizarNome(
+    @PutMapping("/{documentoId}/nome")
+    public ResponseEntity<DocumentoResponseDTO> atualizarNome(
             @PathVariable Long documentoId,
-            @RequestParam String novoNome){
+            @Valid @RequestBody AtualizarNomeDocumentoDTO dto) {
 
-        Documento atualizado = documentoService.atualizarNome(
-                documentoId, novoNome);
-        return ResponseEntity.ok(atualizado);
+        return ResponseEntity.ok(
+                documentoService.atualizarNome(documentoId, dto));
     }
 
     @DeleteMapping("/{documentoId}")
-    public ResponseEntity<Void> deletarDocumento(@PathVariable Long documentoId) {
+    public ResponseEntity<Void> deletarDocumento(
+            @PathVariable Long documentoId) {
+
         documentoService.deletarDocumento(documentoId);
         return ResponseEntity.noContent().build();
     }

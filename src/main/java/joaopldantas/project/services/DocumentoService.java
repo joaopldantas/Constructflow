@@ -1,19 +1,19 @@
 package joaopldantas.project.services;
 
-import joaopldantas.project.entities.Documento;
+import joaopldantas.project.dto.documento.*;
 import joaopldantas.project.entities.enums.StatusDocumento;
+
 import java.util.List;
-import java.util.Optional;
 
 public interface DocumentoService {
 
-    Documento criarDocumento(Documento documento, Long obraId);
-    Optional<Documento> buscarPorId(Long documentoId);
-    List<Documento> listarTodos();
-    List<Documento> listarPorObra(Long obraId);
-    List<Documento> listarPorStatus(StatusDocumento status);
-    List<Documento> listarPorObraEStatus(Long obraId, StatusDocumento status);
-    Documento atualizarStatus(Long documentoId, StatusDocumento novoStatus);
-    Documento atualizarNome(Long documentoId, String novoNome);
+    DocumentoResponseDTO criarDocumento(CriarDocumentoDTO dto);
+    DocumentoResponseDTO buscarPorId(Long documentoId);
+    List<DocumentoResponseDTO> listarTodos();
+    List<DocumentoResponseDTO> listarPorObra(Long obraId);
+    List<DocumentoResponseDTO> listarPorStatus(StatusDocumento status);
+    List<DocumentoResponseDTO> listarPorObraEStatus(Long obraId, StatusDocumento status);
+    DocumentoResponseDTO atualizarStatus(Long documentoId, AtualizarStatusDocumentoDTO dto);
+    DocumentoResponseDTO atualizarNome(Long documentoId, AtualizarNomeDocumentoDTO dto);
     void deletarDocumento(Long documentoId);
 }

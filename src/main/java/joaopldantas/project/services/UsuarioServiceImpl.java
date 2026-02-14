@@ -1,14 +1,14 @@
 package joaopldantas.project.services;
 
+import joaopldantas.project.dto.usuario.*;
 import joaopldantas.project.entities.Usuario;
 import joaopldantas.project.repositories.UsuarioRepository;
-import org.springframework.stereotype.*;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UsuarioServiceImpl implements UsuarioService{
+public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
 
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
@@ -16,52 +16,65 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
-    public Usuario criarUsuario(Usuario usuario) {
-        if (emailJaExiste(usuario.getEmail())) {
+    public UsuarioResponseDTO criar(CriarUsuarioDTO dto) {
+
+        if (emailJaExiste(dto.email())) {
             throw new RuntimeException("Email já cadastrado!");
         }
-        return usuarioRepository.save(usuario);
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.nome());
+        usuario.setEmail(dto.email());
+        usuario.setSenhaHash(dto.senha());
+        usuario.setPapel(dto.papel());
+
+        usuarioRepository.save(usuario);
+
+        return toResponseDTO(usuario);
     }
 
     @Override
-    public Optional<Usuario> buscarPorId(Long id) {
-        if (id == null) {
-            return Optional.empty();
-        }
-        return usuarioRepository.findById(id);
-    }
-
-    @Override
-    public Optional<Usuario> buscarPorEmail(String email) {
-        if (email == null) {
-            return Optional.empty();
-        }
-        return usuarioRepository.findByEmail(email);
-    }
-
-    @Override
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
-    }
-
-    @Override
-    public Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado) {
-        return usuarioRepository.findById(id)
-                .map(usuario -> {
-                    usuario.setEmail(usuarioAtualizado.getEmail());
-                    usuario.setSenhaHash(usuarioAtualizado.getSenhaHash());
-                    usuario.setNome(usuarioAtualizado.getNome());
-                    usuario.setPapel(usuarioAtualizado.getPapel());
-                    return usuarioRepository.save(usuario);
-                })
+    public UsuarioResponseDTO buscarPorId(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        return toResponseDTO(usuario);
+    }
+
+    @Override
+    public UsuarioResponseDTO buscarPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        return toResponseDTO(usuario);
+    }
+
+    @Override
+    public List<UsuarioResponseDTO> listarTodos() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public UsuarioResponseDTO atualizar(Long id, AtualizarUsuarioDTO dto) {
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (dto.nome() != null) usuario.setNome(dto.nome());
+        if (dto.email() != null) usuario.setEmail(dto.email());
+        if (dto.senha() != null) usuario.setSenhaHash(dto.senha());
+        if (dto.papel() != null) usuario.setPapel(dto.papel());
+
+        usuarioRepository.save(usuario);
+
+        return toResponseDTO(usuario);
     }
 
     @Override
     public void deletarUsuario(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id não pode ser null");
-        }
 
         if (!usuarioRepository.existsById(id)) {
             throw new RuntimeException("Usuário não encontrado para exclusão");
@@ -72,9 +85,15 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     @Override
     public boolean emailJaExiste(String email) {
-        if (email == null) {
-            return false;
-        }
         return usuarioRepository.existsByEmail(email);
+    }
+
+    private UsuarioResponseDTO toResponseDTO(Usuario usuario) {
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getPapel()
+        );
     }
 }

@@ -1,6 +1,7 @@
 package joaopldantas.project.controllers;
 
-import joaopldantas.project.entities.Obra;
+import jakarta.validation.Valid;
+import joaopldantas.project.dto.obra.*;
 import joaopldantas.project.entities.enums.StatusObra;
 import joaopldantas.project.services.ObraService;
 import org.springframework.http.ResponseEntity;
@@ -13,69 +14,52 @@ import java.util.List;
 public class ObraController {
 
     private final ObraService obraService;
+
     public ObraController(ObraService obraService) {
         this.obraService = obraService;
     }
 
     @PostMapping
-    public ResponseEntity<Obra> criarObra(
-            @RequestBody Obra obra,
-            @RequestParam Long responsavelId) {
+    public ResponseEntity<ObraResponseDTO> criarObra(
+            @Valid @RequestBody CriarObraDTO dto) {
 
-        Obra criada = obraService.criarObra(obra, responsavelId);
-        return ResponseEntity.status(201).body(criada);
+        return ResponseEntity.status(201)
+                .body(obraService.criar(dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Obra> buscarPorId(@PathVariable Long id) {
-        return obraService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ObraResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(obraService.buscarPorId(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Obra>> listarTodas() {
+    public ResponseEntity<List<ObraResponseDTO>> listarTodas() {
         return ResponseEntity.ok(obraService.listarTodas());
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<Obra>> listarPorStatus(@PathVariable StatusObra status) {
+    public ResponseEntity<List<ObraResponseDTO>> listarPorStatus(@PathVariable StatusObra status) {
         return ResponseEntity.ok(obraService.listarPorStatus(status));
     }
 
-    @PutMapping("/{obraId}/status")
-    public ResponseEntity<Obra> atualizarStatus(
+    @PatchMapping("/{obraId}/status")
+    public ResponseEntity<ObraResponseDTO> atualizarStatus(
             @PathVariable Long obraId,
-            @RequestBody StatusObra novoStatus) {
+            @RequestBody AtualizarStatusObraDTO dto) {
 
-        Obra atualizada = obraService.atualizarStatus(obraId, novoStatus);
-        return ResponseEntity.ok(atualizada);
+        return ResponseEntity.ok(obraService.atualizarStatus(obraId, dto));
     }
 
-    @PostMapping("/{obraId}/usuarios/{usuarioId}")
-    public ResponseEntity<Obra> adicionarUsuario(
+    @PatchMapping("/{obraId}")
+    public ResponseEntity<ObraResponseDTO> atualizarObra(
             @PathVariable Long obraId,
-            @PathVariable Long usuarioId) {
+            @RequestBody AtualizarObraDTO dto) {
 
-        Obra atualizada = obraService.adicionarUsuarioNaObra(obraId, usuarioId);
-        return ResponseEntity.ok(atualizada);
-    }
-
-    @DeleteMapping("/{obraId}/usuarios/{usuarioId}")
-    public ResponseEntity<Obra> removerUsuarioDaObra(
-            @PathVariable Long obraId,
-            @PathVariable Long usuarioId) {
-
-        Obra atualizada = obraService.removerUsuarioDaObra(obraId, usuarioId);
-        return ResponseEntity.ok(atualizada);
+        return ResponseEntity.ok(obraService.atualizar(obraId, dto));
     }
 
     @DeleteMapping("/{obraId}")
     public ResponseEntity<Void> deletarObra(@PathVariable Long obraId) {
-        if (!obraService.existePorId(obraId)) {
-            return ResponseEntity.notFound().build();
-        }
-
         obraService.deletarObra(obraId);
         return ResponseEntity.noContent().build();
     }
