@@ -5,6 +5,7 @@ import joaopldantas.project.dto.usuario.*;
 import joaopldantas.project.entities.Usuario;
 import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +13,12 @@ import java.util.List;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
+                              PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -25,7 +30,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
-        usuario.setSenhaHash(dto.senha());
+        usuario.setSenhaHash(passwordEncoder.encode(dto.senha()));
         usuario.setPapel(dto.papel());
 
         usuarioRepository.save(usuario);
@@ -73,7 +78,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         if (dto.nome() != null) usuario.setNome(dto.nome());
-        if (dto.senha() != null) usuario.setSenhaHash(dto.senha());
+        if (dto.senha() != null)
+            usuario.setSenhaHash(passwordEncoder.encode(dto.senha()));
         if (dto.papel() != null) usuario.setPapel(dto.papel());
 
         usuarioRepository.save(usuario);
