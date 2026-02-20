@@ -4,10 +4,16 @@ import jakarta.persistence.EntityNotFoundException;
 import joaopldantas.project.dto.documento.*;
 import joaopldantas.project.entities.Documento;
 import joaopldantas.project.entities.Obra;
+import joaopldantas.project.entities.Usuario;
+import joaopldantas.project.entities.enums.Papel;
 import joaopldantas.project.entities.enums.StatusDocumento;
 import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.DocumentoRepository;
 import joaopldantas.project.repositories.ObraRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,11 +24,13 @@ public class DocumentoServiceImpl implements DocumentoService {
 
     private final DocumentoRepository documentoRepository;
     private final ObraRepository obraRepository;
+    private final UsuarioAutenticadoService usuarioAutenticadoService;
 
     public DocumentoServiceImpl(DocumentoRepository documentoRepository,
-                                ObraRepository obraRepository) {
+                                ObraRepository obraRepository, UsuarioAutenticadoService usuarioAutenticadoService) {
         this.documentoRepository = documentoRepository;
         this.obraRepository = obraRepository;
+        this.usuarioAutenticadoService = usuarioAutenticadoService;
     }
 
     @Override
@@ -30,6 +38,18 @@ public class DocumentoServiceImpl implements DocumentoService {
         Obra obra = obraRepository.findById(dto.obraId())
                 .orElseThrow(() ->
                         new EntityNotFoundException("Obra não encontrada"));
+
+        Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
+
+        if (usuarioLogado.getPapel() == Papel.CAMPO ||
+                usuarioLogado.getPapel() == Papel.ENGENHEIRO) {
+
+            if (!obra.getUsuarios().contains(usuarioLogado)) {
+                throw new AccessDeniedException(
+                        "Usuário só pode adicionar documento em obra vinculada"
+                );
+            }
+        }
 
         if (dto.status() == null) {
             throw new BusinessException("Status do documento é obrigatório");

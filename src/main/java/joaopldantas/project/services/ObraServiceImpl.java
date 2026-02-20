@@ -4,11 +4,15 @@ import jakarta.persistence.EntityNotFoundException;
 import joaopldantas.project.dto.obra.*;
 import joaopldantas.project.entities.Obra;
 import joaopldantas.project.entities.Usuario;
+import joaopldantas.project.entities.enums.Papel;
 import joaopldantas.project.entities.enums.StatusObra;
 import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.ObraRepository;
 import joaopldantas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 
@@ -17,21 +21,24 @@ public class ObraServiceImpl implements ObraService {
 
     private final ObraRepository obraRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioAutenticadoService usuarioAutenticadoService;
 
     public ObraServiceImpl(ObraRepository obraRepository,
-                           UsuarioRepository usuarioRepository) {
+                           UsuarioRepository usuarioRepository, UsuarioAutenticadoService usuarioAutenticadoService) {
         this.obraRepository = obraRepository;
         this.usuarioRepository = usuarioRepository;
+        this.usuarioAutenticadoService = usuarioAutenticadoService;
     }
 
     @Override
     public ObraResponseDTO criar(CriarObraDTO dto) {
+
         Usuario responsavel = usuarioRepository.findById(dto.responsavelId())
                 .orElseThrow(() ->
                         new EntityNotFoundException("Usuário responsável não encontrado"));
 
-        if (dto.status() == null) {
-            throw new BusinessException("Status da obra é obrigatório");
+        if (responsavel.getPapel() != Papel.ENGENHEIRO) {
+            throw new BusinessException("Responsável deve ser um ENGENHEIRO");
         }
 
         Obra obra = new Obra();
@@ -56,8 +63,24 @@ public class ObraServiceImpl implements ObraService {
 
     @Override
     public List<ObraResponseDTO> listarTodas() {
-        return obraRepository.findAll()
-                .stream()
+
+        Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
+
+        List<Obra> obras;
+
+        if (usuarioLogado.getPapel() == Papel.ADMIN) {
+            obras = obraRepository.findAll();
+        } else if (usuarioLogado.getPapel() == Papel.ENGENHEIRO) {
+            obras = obraRepository.findByResponsavelId(usuarioLogado.getId());
+        } else if (usuarioLogado.getPapel() == Papel.CAMPO) {
+            obras = obraRepository.findByUsuariosId(usuarioLogado.getId());
+        } else if (usuarioLogado.getPapel() == Papel.BACKOFFICE) {
+            obras = obraRepository.findAll();
+        } else {
+            throw new AccessDeniedException("Sem permissão para visualizar obras");
+        }
+
+        return obras.stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
@@ -152,8 +175,23 @@ public class ObraServiceImpl implements ObraService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Obra não encontrada"));
 
-        if (dto.status() == null) {
-            throw new BusinessException("Status não pode ser nulo");
+        Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
+
+        if (usuarioLogado.getPapel() != Papel.ADMIN) {
+
+            if (usuarioLogado.getPapel() != Papel.ENGENHEIRO ||
+                    !obra.getResponsavel().getId().equals(usuarioLogado.getId())) {
+
+                throw new AccessDeniedException(
+                        "Somente o engenheiro responsável pode alterar o status"
+                );
+            }
+        }
+
+        if (!obra.getStatus().podeIrPara(dto.status())) {
+            throw new BusinessException(
+                    "Transição inválida de " +
+                            obra.getStatus() + " para " + dto.status());
         }
 
         obra.setStatus(dto.status());
@@ -186,10 +224,19 @@ public class ObraServiceImpl implements ObraService {
 
     @Override
     public void deletarObra(Long obraId) {
-        if (!obraRepository.existsById(obraId)) {
-            throw new EntityNotFoundException("Obra não encontrada");
+
+        Obra obra = obraRepository.findById(obraId)
+                .orElseThrow(() -> new EntityNotFoundException("Obra não encontrada"));
+
+        Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
+
+        if (usuarioLogado.getPapel() != Papel.ADMIN) {
+            throw new AccessDeniedException(
+                    "Somente ADMIN pode deletar obra"
+            );
         }
-        obraRepository.deleteById(obraId);
+
+        obraRepository.delete(obra);
     }
 
     @Override
