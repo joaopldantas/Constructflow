@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record DocumentoResponseDTO(
         Long id,
         String nome,
+        String caminhoArquivo,
         TipoDocumento tipo,
         StatusDocumento status,
         LocalDateTime dataUpload,

@@ -27,7 +27,7 @@ public class Documento {
     @Enumerated(EnumType.STRING)
     private StatusDocumento status = StatusDocumento.PENDENTE;
 
-    @Column(nullable = false)
+    @Column
     private String caminhoArquivo;
     private LocalDateTime dataUpload;
 

@@ -57,6 +57,7 @@ public class DocumentoServiceImpl implements DocumentoService {
 
         Documento documento = new Documento();
         documento.setNome(dto.nome());
+        documento.setCaminhoArquivo(dto.caminhoArquivo());
         documento.setTipo(dto.tipo());
         documento.setStatus(dto.status());
         documento.setDataUpload(LocalDateTime.now());
@@ -154,6 +155,7 @@ public class DocumentoServiceImpl implements DocumentoService {
         return new DocumentoResponseDTO(
                 documento.getId(),
                 documento.getNome(),
+                documento.getCaminhoArquivo(),
                 documento.getTipo(),
                 documento.getStatus(),
                 documento.getDataUpload(),

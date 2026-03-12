@@ -16,6 +16,8 @@ public record CriarDocumentoDTO(
         @NotNull(message = "Status é obrigatório")
         StatusDocumento status,
 
+        String caminhoArquivo,
+
         @NotNull(message = "Obra é obrigatória")
         Long obraId
 ) {}
