@@ -38,16 +38,8 @@ ConstructFlow simula um ecossistema real de construção civil: cadastro de usu�
 * **Tipos de Documento:** `ORCAMENTO`, `CONTRATO`, `NOTA_FISCAL`, `PROJETO`, `RELATORIO`, `OUTRO`.
 * **Status de Documento:** `PENDENTE`, `APROVADO`, `REPROVADO`.
 * **Fluxo de Status da Obra:**
-```mermaid
-stateDiagram-v2
-    [*] --> PLANEJADA
-    PLANEJADA --> EM_ANDAMENTO: Iniciar
-    EM_ANDAMENTO --> FINALIZADA: Concluir
-    EM_ANDAMENTO --> CANCELADA: Abortar
-    FINALIZADA --> [*]
-    CANCELADA --> [*]
-```
-## 🔒 Regras de Negócio e Segurança
+
+## Regras de Negócio e Segurança
 
 * **Acesso Público:** Apenas `POST /auth/login` e `POST /usuarios` são públicos. Todo o restante da API exige um token JWT válido.
 * **Permissões de Status:** Somente o papel `ADMIN` ou o `ENGENHEIRO` definido como responsável pela obra podem alterar o seu status.
@@ -60,7 +52,7 @@ stateDiagram-v2
 
 ---
 
-## 🛣️ Endpoints Principais
+## Endpoints Principais
 
 ### Autenticação
 * `POST /auth/login`
@@ -83,7 +75,7 @@ stateDiagram-v2
 
 ---
 
-## 🚀 Como Executar Localmente
+## Como Executar Localmente
 
 ### Pré-requisitos
 * **Java 23** (Variável `JAVA_HOME` configurada)
@@ -111,6 +103,7 @@ stateDiagram-v2
 
 ## Estrutura do repositorio
 
+```plaintext
 constructflow-api/       # API Spring Boot
  ├── src/main/java/com/project/
  │    ├── controllers/   # Recursos da API (Endpoints)
@@ -121,6 +114,7 @@ constructflow-api/       # API Spring Boot
  │    ├── security/      # Filtros JWT e Configuração de Segurança
  │    └── services/      # Camada de Regras de Negócio
 constructflow-frontend/  # App React + Vite (Base UI)
+```
 
 ## Notas de portfolio
 O foco central deste projeto é a robustez do ecossistema Backend. O frontend atual é minimalista e serve como uma prova de conceito (PoC) para o consumo da API. Toda a estrutura foi desenhada para ser "production-ready", com separação clara de responsabilidades, permitindo fácil escalabilidade para novos papéis e fluxos de trabalho.
