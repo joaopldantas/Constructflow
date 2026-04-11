@@ -121,7 +121,7 @@ O foco central deste projeto é a robustez do ecossistema Backend. O frontend at
 
 ## Proximos passos
 - Tela de login e dashboard com consumo real da API.
-[ ] Documentação: Implementar Swagger/OpenAPI para documentação interativa.
-[ ] Infraestrutura: Criar arquivo docker-compose.yml para orquestração simplificada.
-[ ] Storage: Adicionar suporte a upload real de arquivos (Integração com AWS S3 ou MinIO).
-[ ] Qualidade: Ampliar a cobertura de testes unitários e de integração.
+ - [ ] Documentação: Implementar Swagger/OpenAPI para documentação interativa.
+ - [ ] Infraestrutura: Criar arquivo docker-compose.yml para orquestração simplificada.
+ - [ ] Storage: Adicionar suporte a upload real de arquivos (Integração com AWS S3 ou MinIO).
+ - [ ] Qualidade: Ampliar a cobertura de testes unitários e de integração.
