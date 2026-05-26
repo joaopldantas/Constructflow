@@ -12,7 +12,7 @@ Prerequisitos:
 ./mvnw spring-boot:run
 ```
 
-## Configuracao
+## Configuração
 
 Arquivo: `src/main/resources/application.properties`
 
@@ -22,6 +22,6 @@ spring.datasource.username=postgres
 spring.datasource.password=postgres
 ```
 
-## Referencia
+## Referência
 
 Documentacao geral do projeto: [`../README.md`](../README.md)

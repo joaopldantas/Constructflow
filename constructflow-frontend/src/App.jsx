@@ -1,9 +1,18 @@
-import './App.css'
+import { useState } from "react";
+import Login from "./pages/Login";
+import Obras from "./pages/Obras";
 
-function App() {
-    return (
-        <h1>ConstructFlow</h1>
-    )
+export default function App() {
+    const [logado, setLogado] = useState(!!localStorage.getItem("token"));
+
+    function onLogin() {
+        setLogado(true);
+    }
+
+    function onLogout() {
+        localStorage.removeItem("token");
+        setLogado(false);
+    }
+
+    return logado ? <Obras onLogout={onLogout} /> : <Login onLogin={onLogin} />;
 }
-
-export default App

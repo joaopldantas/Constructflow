@@ -36,7 +36,7 @@ npm ci
 npm run dev
 ```
 
-## Configuracao do banco (API)
+## Configuração do banco (API)
 
 Arquivo: `constructflow-api/src/main/resources/application.properties`
 
@@ -48,14 +48,7 @@ spring.datasource.username=postgres
 spring.datasource.password=postgres
 ```
 
-## Documentacao por modulo
+## Documentação por módulo
 
 - API: [`constructflow-api/README.md`](constructflow-api/README.md)
 - Frontend: [`constructflow-frontend/README.md`](constructflow-frontend/README.md)
-
-## Recomendacoes de organizacao no GitHub
-
-- Manter um README principal na raiz (fonte de verdade).
-- Manter README de modulo curto (somente instrucoes locais).
-- Nao versionar `.idea/`, `node_modules/`, `dist/`, `target/`, `.env`.
-- Versionar `mvnw`, `mvnw.cmd` e `.mvn/` para padronizar setup do backend.
