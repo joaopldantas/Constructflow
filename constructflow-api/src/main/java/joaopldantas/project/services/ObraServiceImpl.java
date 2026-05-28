@@ -44,6 +44,7 @@ public class ObraServiceImpl implements ObraService {
         Obra obra = new Obra();
         obra.setNome(dto.nome());
         obra.setEndereco(dto.endereco());
+        obra.setCep(dto.cep());
         obra.setStatus(dto.status());
         obra.setResponsavel(responsavel);
 
@@ -208,6 +209,7 @@ public class ObraServiceImpl implements ObraService {
 
         if (dto.nome() != null) obra.setNome(dto.nome());
         if (dto.endereco() != null) obra.setEndereco(dto.endereco());
+        if (dto.cep() != null) obra.setCep(dto.cep());
         if (dto.status() != null) obra.setStatus(dto.status());
 
         if (dto.responsavelId() != null) {
@@ -249,6 +251,7 @@ public class ObraServiceImpl implements ObraService {
                 obra.getId(),
                 obra.getNome(),
                 obra.getEndereco(),
+                obra.getCep(),
                 obra.getStatus(),
                 obra.getResponsavel() != null
                         ? obra.getResponsavel().getId()

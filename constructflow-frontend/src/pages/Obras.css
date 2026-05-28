@@ -1,0 +1,396 @@
+.obras-page {
+    min-height: 100vh;
+    padding: 32px;
+    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.obras-header {
+    width: min(100%, 1080px);
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.obras-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.obras-header h1 {
+    margin: 0;
+    font-size: 32px;
+    line-height: 1.1;
+}
+
+.obras-header p {
+    margin: 8px 0 0;
+    color: #475569;
+}
+
+.obras-header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.obras-tabs {
+    width: min(100%, 1080px);
+    margin: 0 auto 20px;
+    display: flex;
+    gap: 8px;
+}
+
+.obras-tabs button {
+    height: 40px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 18px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.obras-tabs button.active {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.primary-button,
+.logout-button,
+.danger-button,
+.text-button,
+.inline-button {
+    height: 42px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.primary-button,
+.logout-button {
+    min-width: 88px;
+    border: 0;
+    color: #ffffff;
+}
+
+.primary-button {
+    background: #2563eb;
+}
+
+.logout-button {
+    background: #0f172a;
+}
+
+.danger-button,
+.text-button,
+.inline-button {
+    background: #ffffff;
+}
+
+.danger-button {
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 0 12px;
+}
+
+.text-button {
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 0 14px;
+}
+
+.inline-button {
+    height: 34px;
+    margin-left: 10px;
+    border: 1px solid #cbd5e1;
+    color: #2563eb;
+    padding: 0 12px;
+}
+
+.primary-button:disabled,
+.danger-button:disabled,
+.obra-status:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.obras-summary {
+    width: min(100%, 1080px);
+    margin: 0 auto 20px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.obras-summary article,
+.obras-panel,
+.obra-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.obras-summary article {
+    padding: 18px;
+    display: grid;
+    gap: 4px;
+}
+
+.obras-summary strong {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.obras-summary span {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.obras-panel,
+.obras-form-panel {
+    width: min(100%, 1080px);
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.obras-form-panel {
+    margin-bottom: 20px;
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.obras-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.obras-panel-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.obras-panel-header span {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.panel-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.obras-form {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 140px 170px 220px auto;
+    align-items: end;
+    gap: 12px;
+}
+
+.engenheiro-form {
+    grid-template-columns: 1fr 1.2fr 180px auto;
+}
+
+.obras-form label {
+    display: grid;
+    gap: 6px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.obras-form input,
+.obras-form select {
+    height: 42px;
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 12px;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.obras-form input.campo-valido {
+    border-color: #16a34a;
+}
+
+.obras-form input.campo-invalido {
+    border-color: #dc2626;
+    background: #fff7f7;
+}
+
+.field-hint {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.field-hint.invalid {
+    color: #dc2626;
+}
+
+.obras-list {
+    display: grid;
+    gap: 12px;
+}
+
+.obra-card {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: none;
+}
+
+.obra-card h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.obra-card p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.obra-cep {
+    display: block;
+    margin-top: 6px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.obra-meta {
+    display: grid;
+    justify-items: end;
+    gap: 8px;
+}
+
+.obra-meta small {
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.obra-status {
+    width: max-content;
+    min-width: 142px;
+    border: 0;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-planejada {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-em_andamento {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-finalizada {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-cancelada {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.obras-error,
+.obras-success,
+.obras-state {
+    margin: 0;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 14px;
+}
+
+.obras-message {
+    width: min(100%, 1080px);
+    margin: 0 auto 12px;
+}
+
+.obras-error {
+    margin-bottom: 12px;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.obras-success {
+    margin-bottom: 12px;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.obras-state {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+@media (max-width: 720px) {
+    .obras-page {
+        padding: 20px;
+    }
+
+    .obras-header,
+    .obras-panel-header,
+    .obra-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .obras-header-actions,
+    .obras-panel-header {
+        width: 100%;
+    }
+
+    .panel-header-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .obras-header-actions,
+    .obras-tabs {
+        flex-wrap: wrap;
+    }
+
+    .obras-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .obras-form {
+        grid-template-columns: 1fr;
+    }
+
+    .inline-button {
+        width: 100%;
+        margin: 10px 0 0;
+    }
+
+    .obra-meta {
+        justify-items: start;
+    }
+}

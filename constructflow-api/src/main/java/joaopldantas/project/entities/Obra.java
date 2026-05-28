@@ -24,6 +24,8 @@ public class Obra {
     @Column(nullable = false)
     private String endereco;
 
+    private String cep;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusObra status;
@@ -43,9 +45,10 @@ public class Obra {
     )
     private List<Usuario> usuarios = new ArrayList<>();
 
-    public Obra(String nome, String endereco, StatusObra status) {
+    public Obra(String nome, String endereco, String cep, StatusObra status) {
         this.nome = nome;
         this.endereco = endereco;
+        this.cep = cep;
         this.status = status;
     }
 }

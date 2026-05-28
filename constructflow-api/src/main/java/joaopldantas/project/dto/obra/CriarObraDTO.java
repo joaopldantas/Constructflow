@@ -11,6 +11,10 @@ public record CriarObraDTO(
         @NotBlank(message = "Endereço é obrigatório")
         String endereco,
 
+        @NotBlank(message = "CEP é obrigatório")
+        @Pattern(regexp = "\\d{5}-\\d{3}", message = "CEP deve estar no formato 00000-000")
+        String cep,
+
         @NotNull(message = "Status é obrigatório")
         StatusObra status,
 

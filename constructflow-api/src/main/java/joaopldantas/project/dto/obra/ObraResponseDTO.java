@@ -6,6 +6,7 @@ public record ObraResponseDTO(
         Long id,
         String nome,
         String endereco,
+        String cep,
         StatusObra status,
         Long responsavelId
 ) {}

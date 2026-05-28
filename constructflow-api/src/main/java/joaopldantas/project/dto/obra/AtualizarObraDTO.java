@@ -6,6 +6,7 @@ public record AtualizarObraDTO(
 
         String nome,
         String endereco,
+        String cep,
         StatusObra status,
         Long responsavelId
 
