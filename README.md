@@ -86,10 +86,10 @@ Isso sobe um PostgreSQL com o banco `constructflow` já criado. As tabelas são 
 
 ```bash
 cd constructflow-api
-./mvnw spring-boot:run
+ADMIN_EMAIL=admin@constructflow.dev ADMIN_SENHA=senha123 ./mvnw spring-boot:run
 ```
 
-A API sobe em `http://localhost:8080`.
+A API sobe em `http://localhost:8080`. Na primeira execução, ela cria o administrador inicial com as credenciais de `ADMIN_EMAIL`/`ADMIN_SENHA`. O cadastro de usuários exige um ADMIN autenticado, então é por esse usuário que você entra no sistema.
 
 ### 3. Frontend
 
@@ -110,7 +110,7 @@ Com a API rodando e o banco vazio:
 ./scripts/seed-dev.sh
 ```
 
-O script cria usuários de cada papel, obras e documentos de exemplo. O acesso de administrador é `admin@constructflow.dev` e a senha está no próprio script. Use apenas em ambiente local.
+O script entra como o administrador inicial e cria usuários de cada papel, obras e documentos de exemplo. A senha dos usuários criados está no próprio script. Use apenas em ambiente local.
 
 ## Configuração
 
@@ -121,6 +121,9 @@ A API lê as configurações de variáveis de ambiente, com padrões voltados pa
 | `DB_URL`      | `jdbc:postgresql://localhost:5432/constructflow` | URL JDBC do PostgreSQL |
 | `DB_USER`     | `postgres`                                       | Usuário do banco |
 | `DB_PASS`     | `postgres`                                       | Senha do banco |
+| `ADMIN_EMAIL` | —                                                | Email do administrador inicial (criado se não houver nenhum ADMIN) |
+| `ADMIN_SENHA` | —                                                | Senha do administrador inicial (mín. 6 caracteres) |
+| `ADMIN_NOME`  | `Administrador`                                  | Nome do administrador inicial |
 | `JWT_SECRET`  | chave de desenvolvimento                         | Chave HMAC-SHA256 em Base64 (mín. 32 bytes). **Obrigatório definir fora do ambiente local:** `openssl rand -base64 32` |
 
 No frontend:
@@ -143,7 +146,7 @@ No frontend:
 
 ## Referência da API
 
-Todas as rotas, exceto `POST /auth/login` e `POST /usuarios`, exigem o cabeçalho `Authorization: Bearer <token>`.
+Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: Bearer <token>`.
 
 <details>
 <summary><strong>Autenticação</strong></summary>
@@ -159,7 +162,7 @@ Todas as rotas, exceto `POST /auth/login` e `POST /usuarios`, exigem o cabeçalh
 
 | Método | Rota                       | Descrição |
 |--------|----------------------------|-----------|
-| POST   | `/usuarios`                | Cria usuário `{ nome, email, senha, papel }` |
+| POST   | `/usuarios`                | Cria usuário `{ nome, email, senha, papel }` (somente `ADMIN`) |
 | GET    | `/usuarios`                | Lista usuários |
 | GET    | `/usuarios/{id}`           | Busca por id |
 | GET    | `/usuarios/email?email=`   | Busca por email |
