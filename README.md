@@ -86,10 +86,12 @@ Isso sobe um PostgreSQL com o banco `constructflow` já criado. As tabelas são 
 
 ```bash
 cd constructflow-api
-ADMIN_EMAIL=admin@constructflow.dev ADMIN_SENHA=senha123 ./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-A API sobe em `http://localhost:8080`. Na primeira execução, ela cria o administrador inicial com as credenciais de `ADMIN_EMAIL`/`ADMIN_SENHA`. O cadastro de usuários exige um ADMIN autenticado, então é por esse usuário que você entra no sistema.
+A API sobe em `http://localhost:8080`. O profile `dev` (`application-dev.properties`) traz uma chave JWT de desenvolvimento e cria o administrador inicial `admin@constructflow.dev` com a senha `senha123`. O cadastro de usuários exige um ADMIN autenticado, então é por esse usuário que você entra no sistema.
+
+> Fora do profile `dev`, a API **não sobe** sem `JWT_SECRET`, e o administrador inicial só é criado se `ADMIN_EMAIL` e `ADMIN_SENHA` estiverem definidos.
 
 ### 3. Frontend
 
@@ -114,7 +116,7 @@ O script entra como o administrador inicial e cria usuários de cada papel, obra
 
 ## Configuração
 
-A API lê as configurações de variáveis de ambiente, com padrões voltados para desenvolvimento:
+A API lê as configurações de variáveis de ambiente. Os padrões abaixo valem sem profile; o profile `dev` preenche `JWT_SECRET` e `ADMIN_*` com valores locais.
 
 | Variável      | Padrão                                           | Descrição |
 |---------------|--------------------------------------------------|-----------|
@@ -124,7 +126,7 @@ A API lê as configurações de variáveis de ambiente, com padrões voltados pa
 | `ADMIN_EMAIL` | —                                                | Email do administrador inicial (criado se não houver nenhum ADMIN) |
 | `ADMIN_SENHA` | —                                                | Senha do administrador inicial (mín. 6 caracteres) |
 | `ADMIN_NOME`  | `Administrador`                                  | Nome do administrador inicial |
-| `JWT_SECRET`  | chave de desenvolvimento                         | Chave HMAC-SHA256 em Base64 (mín. 32 bytes). **Obrigatório definir fora do ambiente local:** `openssl rand -base64 32` |
+| `JWT_SECRET`  | — (**obrigatório**)                               | Chave HMAC-SHA256 em Base64, mín. 32 bytes. Gere com `openssl rand -base64 32` |
 
 No frontend:
 
