@@ -10,8 +10,6 @@ import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.ObraRepository;
 import joaopldantas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
@@ -22,24 +20,24 @@ public class ObraServiceImpl implements ObraService {
     private final ObraRepository obraRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioAutenticadoService usuarioAutenticadoService;
+    private final AcessoObraService acessoObraService;
 
     public ObraServiceImpl(ObraRepository obraRepository,
-                           UsuarioRepository usuarioRepository, UsuarioAutenticadoService usuarioAutenticadoService) {
+                           UsuarioRepository usuarioRepository,
+                           UsuarioAutenticadoService usuarioAutenticadoService,
+                           AcessoObraService acessoObraService) {
         this.obraRepository = obraRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioAutenticadoService = usuarioAutenticadoService;
+        this.acessoObraService = acessoObraService;
     }
 
     @Override
     public ObraResponseDTO criar(CriarObraDTO dto) {
 
-        Usuario responsavel = usuarioRepository.findById(dto.responsavelId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Usuário responsável não encontrado"));
+        exigirPermissaoDeEscrita();
 
-        if (responsavel.getPapel() != Papel.ENGENHEIRO) {
-            throw new BusinessException("Responsável deve ser um ENGENHEIRO");
-        }
+        Usuario responsavel = buscarEngenheiroResponsavel(dto.responsavelId());
 
         Obra obra = new Obra();
         obra.setNome(dto.nome());
@@ -59,37 +57,32 @@ public class ObraServiceImpl implements ObraService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Obra não encontrada"));
 
+        acessoObraService.exigirVisualizacao(usuarioAutenticadoService.getUsuarioLogado(), obra);
+
         return toResponseDTO(obra);
     }
 
     @Override
     public List<ObraResponseDTO> listarTodas() {
-
         Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
 
-        List<Obra> obras;
-
-        if (usuarioLogado.getPapel() == Papel.ADMIN) {
-            obras = obraRepository.findAll();
-        } else if (usuarioLogado.getPapel() == Papel.ENGENHEIRO) {
-            obras = obraRepository.findByResponsavelId(usuarioLogado.getId());
-        } else if (usuarioLogado.getPapel() == Papel.CAMPO) {
-            obras = obraRepository.findByUsuariosId(usuarioLogado.getId());
-        } else if (usuarioLogado.getPapel() == Papel.BACKOFFICE) {
-            obras = obraRepository.findAll();
-        } else {
-            throw new AccessDeniedException("Sem permissão para visualizar obras");
-        }
-
-        return obras.stream()
+        return acessoObraService.obrasVisiveis(usuarioLogado)
+                .stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
 
     @Override
     public List<ObraResponseDTO> listarPorStatus(StatusObra status) {
-        return obraRepository.findByStatus(status)
-                .stream()
+        Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
+
+        List<Obra> obras = acessoObraService.acessaTodas(usuarioLogado)
+                ? obraRepository.findByStatus(status)
+                : acessoObraService.obrasVisiveis(usuarioLogado).stream()
+                        .filter(obra -> obra.getStatus() == status)
+                        .toList();
+
+        return obras.stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
@@ -207,16 +200,19 @@ public class ObraServiceImpl implements ObraService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Obra não encontrada"));
 
+        exigirPermissaoDeEscrita();
+
+        if (dto.status() != null && dto.status() != obra.getStatus()) {
+            throw new BusinessException(
+                    "Use PATCH /obras/{id}/status para alterar o status da obra");
+        }
+
         if (dto.nome() != null) obra.setNome(dto.nome());
         if (dto.endereco() != null) obra.setEndereco(dto.endereco());
         if (dto.cep() != null) obra.setCep(dto.cep());
-        if (dto.status() != null) obra.setStatus(dto.status());
 
         if (dto.responsavelId() != null) {
-            Usuario responsavel = usuarioRepository.findById(dto.responsavelId())
-                    .orElseThrow(() ->
-                            new EntityNotFoundException("Usuário responsável não encontrado"));
-            obra.setResponsavel(responsavel);
+            obra.setResponsavel(buscarEngenheiroResponsavel(dto.responsavelId()));
         }
 
         obraRepository.save(obra);
@@ -244,6 +240,28 @@ public class ObraServiceImpl implements ObraService {
     @Override
     public boolean existePorId(Long obraId) {
         return obraRepository.existsById(obraId);
+    }
+
+    private void exigirPermissaoDeEscrita() {
+        Papel papel = usuarioAutenticadoService.getUsuarioLogado().getPapel();
+
+        if (papel != Papel.ADMIN && papel != Papel.BACKOFFICE) {
+            throw new AccessDeniedException(
+                    "Somente ADMIN ou BACKOFFICE podem cadastrar ou editar obras"
+            );
+        }
+    }
+
+    private Usuario buscarEngenheiroResponsavel(Long usuarioId) {
+        Usuario responsavel = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário responsável não encontrado"));
+
+        if (responsavel.getPapel() != Papel.ENGENHEIRO) {
+            throw new BusinessException("Responsável deve ser um ENGENHEIRO");
+        }
+
+        return responsavel;
     }
 
     private ObraResponseDTO toResponseDTO(Obra obra) {

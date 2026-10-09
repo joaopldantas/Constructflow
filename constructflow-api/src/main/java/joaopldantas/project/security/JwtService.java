@@ -3,8 +3,10 @@ package joaopldantas.project.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,35 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
+    private static final int TAMANHO_MINIMO_CHAVE_BYTES = 32;
+
     @Value("${jwt.secret}")
     private String SECRET_KEY;
+
+    private Key signInKey;
+
+    /** Falha no startup se a chave não estiver configurada ou for fraca. */
+    @PostConstruct
+    void validarChave() {
+        if (SECRET_KEY == null || SECRET_KEY.isBlank()) {
+            throw new IllegalStateException(
+                    "JWT_SECRET não definido. Gere uma chave com: openssl rand -base64 32");
+        }
+
+        byte[] keyBytes;
+        try {
+            keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        } catch (DecodingException ex) {
+            throw new IllegalStateException("JWT_SECRET deve estar em Base64", ex);
+        }
+
+        if (keyBytes.length < TAMANHO_MINIMO_CHAVE_BYTES) {
+            throw new IllegalStateException(
+                    "JWT_SECRET deve ter no mínimo " + TAMANHO_MINIMO_CHAVE_BYTES + " bytes");
+        }
+
+        signInKey = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(String email) {
         return Jwts.builder()
@@ -55,7 +84,6 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return signInKey;
     }
 }
