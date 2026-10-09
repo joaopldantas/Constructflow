@@ -229,7 +229,7 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 ```text
 .
 ├── backend/                    # API REST (Spring Boot)
-│   └── src/main/java/.../
+│   └── src/main/java/com/joaopldantas/constructflow/
 │       ├── controllers/        # Endpoints REST
 │       ├── dto/                # Records de entrada/saída
 │       ├── entities/           # Entidades JPA e enums de domínio
