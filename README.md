@@ -266,6 +266,7 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 ├── e2e/                        # Testes end-to-end (Playwright)
 │   ├── support/                # Cliente da API para preparar dados e fixtures
 │   └── tests/                  # Specs por funcionalidade
+├── .github/workflows/ci.yml    # CI: build, lint e E2E em cada PR
 ├── scripts/seed-dev.sh         # Dados de demonstração
 └── docker-compose.yml          # PostgreSQL para desenvolvimento
 ```
@@ -280,7 +281,7 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 - [x] Testes end-to-end (Playwright)
 - [ ] Testes de backend (JUnit + Testcontainers) e unitários do frontend (Vitest)
 - [ ] Documentação OpenAPI/Swagger
-- [ ] Pipeline de CI (build, lint e testes)
+- [x] Pipeline de CI (build, lint e testes E2E)
 - [ ] Paginação nas listagens
 
 ## Autor
