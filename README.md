@@ -139,7 +139,9 @@ No frontend:
 | Ver obras                           | todas | as que é responsável | todas | as que está vinculado |
 | Alterar status da obra              | ✅    | só as suas | —          | —     |
 | Excluir obra                        | ✅    | —          | —          | —     |
-| Adicionar documento                 | ✅    | obras vinculadas | ✅   | obras vinculadas |
+| Ver e adicionar documentos          | todas | obras que acessa | todas | obras que acessa |
+| Aprovar ou reprovar documentos      | ✅    | só nas suas obras | ✅  | —     |
+| Excluir documentos                  | ✅    | —          | ✅         | —     |
 | Criar, editar e excluir usuários    | ✅    | —          | —          | —     |
 
 > O painel esconde as ações que o papel não pode executar, mas quem decide de fato é a API. Os pontos em aberto estão em [Roadmap](#roadmap).

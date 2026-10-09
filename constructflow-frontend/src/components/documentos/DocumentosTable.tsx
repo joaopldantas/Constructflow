@@ -16,13 +16,15 @@ interface DocumentosTableProps {
   documentos: Documento[]
   /** Quando informado, exibe a coluna "Obra" com link. */
   obrasPorId?: Map<number, Obra>
+  /** Obra dos documentos, quando todos pertencem à mesma (tela de detalhe). */
+  obra?: Obra
 }
 
 function isLink(caminho: string) {
   return /^https?:\/\//i.test(caminho)
 }
 
-export function DocumentosTable({ documentos, obrasPorId }: DocumentosTableProps) {
+export function DocumentosTable({ documentos, obrasPorId, obra: obraFixa }: DocumentosTableProps) {
   const usuario = useUsuarioLogado()
   const { notify } = useToast()
   const atualizarStatus = useAtualizarStatusDocumento()
@@ -30,7 +32,6 @@ export function DocumentosTable({ documentos, obrasPorId }: DocumentosTableProps
   const [renomeando, setRenomeando] = useState<Documento | null>(null)
   const [excluindo, setExcluindo] = useState<Documento | null>(null)
 
-  const podeAvaliar = can.avaliarDocumento(usuario)
   const podeExcluir = can.excluirDocumento(usuario)
 
   async function avaliar(documento: Documento, status: StatusDocumento) {
@@ -72,7 +73,8 @@ export function DocumentosTable({ documentos, obrasPorId }: DocumentosTableProps
           </thead>
           <tbody>
             {documentos.map((doc) => {
-              const obra = obrasPorId?.get(doc.obraId)
+              const obra = obraFixa ?? obrasPorId?.get(doc.obraId)
+              const podeAvaliar = can.avaliarDocumento(usuario, obra)
               return (
                 <tr key={doc.id}>
                   <td>

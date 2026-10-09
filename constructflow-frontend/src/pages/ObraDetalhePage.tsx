@@ -163,7 +163,7 @@ export function ObraDetalhePage() {
         ) : documentos.data.length === 0 ? (
           <EmptyState icon={<FileText />} title="Nenhum documento" description="Adicione orçamentos, contratos, projetos e relatórios desta obra." />
         ) : (
-          <DocumentosTable documentos={documentos.data} />
+          <DocumentosTable documentos={documentos.data} obra={dados} />
         )}
       </section>
 

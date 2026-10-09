@@ -9,7 +9,9 @@ export const can = {
   excluirObra: (u: Usuario) => u.papel === 'ADMIN',
   alterarStatusObra: (u: Usuario, obra: Obra) =>
     u.papel === 'ADMIN' || (u.papel === 'ENGENHEIRO' && obra.responsavelId === u.id),
-  avaliarDocumento: (u: Usuario) =>
-    u.papel === 'ADMIN' || u.papel === 'ENGENHEIRO' || u.papel === 'BACKOFFICE',
+  avaliarDocumento: (u: Usuario, obra: Obra | undefined) =>
+    u.papel === 'ADMIN' ||
+    u.papel === 'BACKOFFICE' ||
+    (u.papel === 'ENGENHEIRO' && obra?.responsavelId === u.id),
   excluirDocumento: (u: Usuario) => u.papel === 'ADMIN' || u.papel === 'BACKOFFICE',
 }
