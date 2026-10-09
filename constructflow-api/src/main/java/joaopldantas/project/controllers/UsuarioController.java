@@ -48,6 +48,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(
             @PathVariable Long id,
             @Valid @RequestBody AtualizarUsuarioDTO dto) {
@@ -56,6 +57,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletarUsuario(
             @PathVariable Long id) {
 

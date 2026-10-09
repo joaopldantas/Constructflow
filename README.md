@@ -140,7 +140,7 @@ No frontend:
 | Alterar status da obra              | ✅    | só as suas | —          | —     |
 | Excluir obra                        | ✅    | —          | —          | —     |
 | Adicionar documento                 | ✅    | obras vinculadas | ✅   | obras vinculadas |
-| Gerenciar usuários (no painel)      | ✅    | —          | —          | —     |
+| Criar, editar e excluir usuários    | ✅    | —          | —          | —     |
 
 > O painel esconde as ações que o papel não pode executar, mas quem decide de fato é a API. Os pontos em aberto estão em [Roadmap](#roadmap).
 
@@ -166,8 +166,8 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 | GET    | `/usuarios`                | Lista usuários |
 | GET    | `/usuarios/{id}`           | Busca por id |
 | GET    | `/usuarios/email?email=`   | Busca por email |
-| PATCH  | `/usuarios/{id}`           | Atualização parcial |
-| DELETE | `/usuarios/{id}`           | Remove usuário |
+| PATCH  | `/usuarios/{id}`           | Atualização parcial (somente `ADMIN`) |
+| DELETE | `/usuarios/{id}`           | Remove usuário (somente `ADMIN`) |
 
 </details>
 
@@ -247,7 +247,7 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 
 ## Roadmap
 
-- [ ] Restringir `POST /usuarios` e a gestão de usuários ao papel `ADMIN`
+- [x] Restringir `POST /usuarios` e a gestão de usuários ao papel `ADMIN`
 - [ ] Autorização por papel em todos os endpoints de obras e documentos
 - [ ] Endpoints para vincular e desvincular usuários de uma obra
 - [ ] Upload real de arquivos (S3 ou armazenamento local)

@@ -3,6 +3,7 @@ package joaopldantas.project.services;
 import jakarta.persistence.EntityNotFoundException;
 import joaopldantas.project.dto.usuario.*;
 import joaopldantas.project.entities.Usuario;
+import joaopldantas.project.entities.enums.Papel;
 import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,7 +81,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (dto.nome() != null) usuario.setNome(dto.nome());
         if (dto.senha() != null)
             usuario.setSenhaHash(passwordEncoder.encode(dto.senha()));
-        if (dto.papel() != null) usuario.setPapel(dto.papel());
+        if (dto.papel() != null && dto.papel() != usuario.getPapel()) {
+            garantirQueNaoEhUltimoAdmin(usuario);
+            usuario.setPapel(dto.papel());
+        }
 
         usuarioRepository.save(usuario);
 
@@ -89,11 +93,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void deletarUsuario(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new EntityNotFoundException("Usuário não encontrado para exclusão");
-        }
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário não encontrado para exclusão"));
 
-        usuarioRepository.deleteById(id);
+        garantirQueNaoEhUltimoAdmin(usuario);
+        usuarioRepository.delete(usuario);
+    }
+
+    private void garantirQueNaoEhUltimoAdmin(Usuario usuario) {
+        if (usuario.getPapel() == Papel.ADMIN && usuarioRepository.countByPapel(Papel.ADMIN) <= 1) {
+            throw new BusinessException("O sistema precisa de pelo menos um ADMIN");
+        }
     }
 
     @Override
