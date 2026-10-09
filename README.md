@@ -138,7 +138,7 @@ No frontend:
 
 | Ação                                | ADMIN | ENGENHEIRO | BACKOFFICE | CAMPO |
 |-------------------------------------|:-----:|:----------:|:----------:|:-----:|
-| Ver obras                           | todas | as que é responsável | todas | as que está vinculado |
+| Ver obras                           | todas | onde é responsável ou vinculado | todas | onde está vinculado |
 | Cadastrar e editar obras            | ✅    | —          | ✅         | —     |
 | Alterar status da obra              | ✅    | só as suas | —          | —     |
 | Excluir obra                        | ✅    | —          | —          | —     |
@@ -183,8 +183,8 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 |--------|-------------------------|-----------|
 | POST   | `/obras`                | Cria obra `{ nome, endereco, cep, status, responsavelId }` (`ADMIN`/`BACKOFFICE`; responsável deve ser `ENGENHEIRO`) |
 | GET    | `/obras`                | Lista as obras visíveis para o usuário logado |
-| GET    | `/obras/{id}`           | Busca por id |
-| GET    | `/obras/status/{status}`| Filtra por status |
+| GET    | `/obras/{id}`           | Busca por id (se o usuário tiver acesso à obra) |
+| GET    | `/obras/status/{status}`| Filtra por status entre as obras visíveis |
 | PATCH  | `/obras/{id}`           | Atualização parcial de dados cadastrais (`ADMIN`/`BACKOFFICE`); status só pela rota abaixo |
 | PATCH  | `/obras/{id}/status`    | Transição de status (respeita a máquina de estados) |
 | DELETE | `/obras/{id}`           | Remove obra e seus documentos (somente `ADMIN`) |
@@ -253,7 +253,7 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 ## Roadmap
 
 - [x] Restringir `POST /usuarios` e a gestão de usuários ao papel `ADMIN`
-- [ ] Autorização por papel em todos os endpoints de obras e documentos
+- [x] Autorização por papel em todos os endpoints de obras e documentos
 - [ ] Endpoints para vincular e desvincular usuários de uma obra
 - [ ] Upload real de arquivos (S3 ou armazenamento local)
 - [ ] Migrações versionadas com Flyway

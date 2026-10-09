@@ -10,8 +10,6 @@ import joaopldantas.project.exceptions.BusinessException;
 import joaopldantas.project.repositories.ObraRepository;
 import joaopldantas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
@@ -22,12 +20,16 @@ public class ObraServiceImpl implements ObraService {
     private final ObraRepository obraRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioAutenticadoService usuarioAutenticadoService;
+    private final AcessoObraService acessoObraService;
 
     public ObraServiceImpl(ObraRepository obraRepository,
-                           UsuarioRepository usuarioRepository, UsuarioAutenticadoService usuarioAutenticadoService) {
+                           UsuarioRepository usuarioRepository,
+                           UsuarioAutenticadoService usuarioAutenticadoService,
+                           AcessoObraService acessoObraService) {
         this.obraRepository = obraRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioAutenticadoService = usuarioAutenticadoService;
+        this.acessoObraService = acessoObraService;
     }
 
     @Override
@@ -55,37 +57,32 @@ public class ObraServiceImpl implements ObraService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Obra não encontrada"));
 
+        acessoObraService.exigirVisualizacao(usuarioAutenticadoService.getUsuarioLogado(), obra);
+
         return toResponseDTO(obra);
     }
 
     @Override
     public List<ObraResponseDTO> listarTodas() {
-
         Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
 
-        List<Obra> obras;
-
-        if (usuarioLogado.getPapel() == Papel.ADMIN) {
-            obras = obraRepository.findAll();
-        } else if (usuarioLogado.getPapel() == Papel.ENGENHEIRO) {
-            obras = obraRepository.findByResponsavelId(usuarioLogado.getId());
-        } else if (usuarioLogado.getPapel() == Papel.CAMPO) {
-            obras = obraRepository.findByUsuariosId(usuarioLogado.getId());
-        } else if (usuarioLogado.getPapel() == Papel.BACKOFFICE) {
-            obras = obraRepository.findAll();
-        } else {
-            throw new AccessDeniedException("Sem permissão para visualizar obras");
-        }
-
-        return obras.stream()
+        return acessoObraService.obrasVisiveis(usuarioLogado)
+                .stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
 
     @Override
     public List<ObraResponseDTO> listarPorStatus(StatusObra status) {
-        return obraRepository.findByStatus(status)
-                .stream()
+        Usuario usuarioLogado = usuarioAutenticadoService.getUsuarioLogado();
+
+        List<Obra> obras = acessoObraService.acessaTodas(usuarioLogado)
+                ? obraRepository.findByStatus(status)
+                : acessoObraService.obrasVisiveis(usuarioLogado).stream()
+                        .filter(obra -> obra.getStatus() == status)
+                        .toList();
+
+        return obras.stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
