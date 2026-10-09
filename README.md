@@ -137,6 +137,7 @@ No frontend:
 | Ação                                | ADMIN | ENGENHEIRO | BACKOFFICE | CAMPO |
 |-------------------------------------|:-----:|:----------:|:----------:|:-----:|
 | Ver obras                           | todas | as que é responsável | todas | as que está vinculado |
+| Cadastrar e editar obras            | ✅    | —          | ✅         | —     |
 | Alterar status da obra              | ✅    | só as suas | —          | —     |
 | Excluir obra                        | ✅    | —          | —          | —     |
 | Ver e adicionar documentos          | todas | obras que acessa | todas | obras que acessa |
@@ -178,11 +179,11 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 
 | Método | Rota                    | Descrição |
 |--------|-------------------------|-----------|
-| POST   | `/obras`                | Cria obra `{ nome, endereco, cep, status, responsavelId }` (responsável deve ser `ENGENHEIRO`) |
+| POST   | `/obras`                | Cria obra `{ nome, endereco, cep, status, responsavelId }` (`ADMIN`/`BACKOFFICE`; responsável deve ser `ENGENHEIRO`) |
 | GET    | `/obras`                | Lista as obras visíveis para o usuário logado |
 | GET    | `/obras/{id}`           | Busca por id |
 | GET    | `/obras/status/{status}`| Filtra por status |
-| PATCH  | `/obras/{id}`           | Atualização parcial |
+| PATCH  | `/obras/{id}`           | Atualização parcial de dados cadastrais (`ADMIN`/`BACKOFFICE`); status só pela rota abaixo |
 | PATCH  | `/obras/{id}/status`    | Transição de status (respeita a máquina de estados) |
 | DELETE | `/obras/{id}`           | Remove obra e seus documentos (somente `ADMIN`) |
 

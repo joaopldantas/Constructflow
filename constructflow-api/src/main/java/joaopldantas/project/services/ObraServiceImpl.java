@@ -33,13 +33,9 @@ public class ObraServiceImpl implements ObraService {
     @Override
     public ObraResponseDTO criar(CriarObraDTO dto) {
 
-        Usuario responsavel = usuarioRepository.findById(dto.responsavelId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Usuário responsável não encontrado"));
+        exigirPermissaoDeEscrita();
 
-        if (responsavel.getPapel() != Papel.ENGENHEIRO) {
-            throw new BusinessException("Responsável deve ser um ENGENHEIRO");
-        }
+        Usuario responsavel = buscarEngenheiroResponsavel(dto.responsavelId());
 
         Obra obra = new Obra();
         obra.setNome(dto.nome());
@@ -207,16 +203,19 @@ public class ObraServiceImpl implements ObraService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Obra não encontrada"));
 
+        exigirPermissaoDeEscrita();
+
+        if (dto.status() != null && dto.status() != obra.getStatus()) {
+            throw new BusinessException(
+                    "Use PATCH /obras/{id}/status para alterar o status da obra");
+        }
+
         if (dto.nome() != null) obra.setNome(dto.nome());
         if (dto.endereco() != null) obra.setEndereco(dto.endereco());
         if (dto.cep() != null) obra.setCep(dto.cep());
-        if (dto.status() != null) obra.setStatus(dto.status());
 
         if (dto.responsavelId() != null) {
-            Usuario responsavel = usuarioRepository.findById(dto.responsavelId())
-                    .orElseThrow(() ->
-                            new EntityNotFoundException("Usuário responsável não encontrado"));
-            obra.setResponsavel(responsavel);
+            obra.setResponsavel(buscarEngenheiroResponsavel(dto.responsavelId()));
         }
 
         obraRepository.save(obra);
@@ -244,6 +243,28 @@ public class ObraServiceImpl implements ObraService {
     @Override
     public boolean existePorId(Long obraId) {
         return obraRepository.existsById(obraId);
+    }
+
+    private void exigirPermissaoDeEscrita() {
+        Papel papel = usuarioAutenticadoService.getUsuarioLogado().getPapel();
+
+        if (papel != Papel.ADMIN && papel != Papel.BACKOFFICE) {
+            throw new AccessDeniedException(
+                    "Somente ADMIN ou BACKOFFICE podem cadastrar ou editar obras"
+            );
+        }
+    }
+
+    private Usuario buscarEngenheiroResponsavel(Long usuarioId) {
+        Usuario responsavel = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Usuário responsável não encontrado"));
+
+        if (responsavel.getPapel() != Papel.ENGENHEIRO) {
+            throw new BusinessException("Responsável deve ser um ENGENHEIRO");
+        }
+
+        return responsavel;
     }
 
     private ObraResponseDTO toResponseDTO(Obra obra) {
