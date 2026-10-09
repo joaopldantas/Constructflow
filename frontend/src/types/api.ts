@@ -1,4 +1,4 @@
-// Espelha os DTOs e enums da ConstructFlow API (constructflow-api/.../dto e entities/enums).
+// Espelha os DTOs e enums da ConstructFlow API (backend/.../dto e entities/enums).
 
 export type Papel = 'ADMIN' | 'ENGENHEIRO' | 'BACKOFFICE' | 'CAMPO'
 export type StatusObra = 'PLANEJADA' | 'EM_ANDAMENTO' | 'FINALIZADA' | 'CANCELADA'

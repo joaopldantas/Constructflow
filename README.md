@@ -47,8 +47,8 @@ Cadastro de obras, controle de ciclo de vida, fluxo de aprovação de documentos
 
 ```text
 ┌──────────────────────┐   HTTP/JSON + JWT   ┌─────────────────────────┐   JPA   ┌──────────────┐
-│  constructflow-      │ ──────────────────► │  constructflow-api      │ ──────► │  PostgreSQL  │
-│  frontend (React)    │ ◄────────────────── │  (Spring Boot)          │         │              │
+│  frontend            │ ──────────────────► │  backend                │ ──────► │  PostgreSQL  │
+│  (React)             │ ◄────────────────── │  (Spring Boot)          │         │              │
 └──────────────────────┘                     └─────────────────────────┘         └──────────────┘
         :5173                                         :8080                            :5432
 ```
@@ -85,7 +85,7 @@ Isso sobe um PostgreSQL com o banco `constructflow` já criado. As tabelas são 
 ### 2. API
 
 ```bash
-cd constructflow-api
+cd backend
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
@@ -96,7 +96,7 @@ A API sobe em `http://localhost:8080`. O profile `dev` (`application-dev.propert
 ### 3. Frontend
 
 ```bash
-cd constructflow-frontend
+cd frontend
 cp .env.example .env
 npm ci
 npm run dev
@@ -228,7 +228,7 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 
 ```text
 .
-├── constructflow-api/          # API REST (Spring Boot)
+├── backend/                    # API REST (Spring Boot)
 │   └── src/main/java/.../
 │       ├── controllers/        # Endpoints REST
 │       ├── dto/                # Records de entrada/saída
@@ -237,7 +237,7 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 │       ├── repositories/       # Spring Data JPA
 │       ├── security/           # JWT, filtro e configuração do Spring Security
 │       └── services/           # Regras de negócio
-├── constructflow-frontend/     # Painel web (React + TypeScript)
+├── frontend/                   # Painel web (React + TypeScript)
 │   └── src/
 │       ├── components/         # UI reutilizável, layout e componentes de domínio
 │       ├── contexts/           # Autenticação e notificações
