@@ -23,6 +23,7 @@ Cadastro de obras, controle de ciclo de vida, fluxo de aprovação de documentos
 - [Stack](#stack)
 - [Como rodar](#como-rodar)
 - [Configuração](#configuração)
+- [Testes end-to-end](#testes-end-to-end)
 - [Papéis e permissões](#papéis-e-permissões)
 - [Referência da API](#referência-da-api)
 - [Estrutura do repositório](#estrutura-do-repositório)
@@ -62,7 +63,7 @@ A API segue camadas clássicas: `controllers` → `services` (regras de negócio
 | Backend   | Java 23, Spring Boot 3.4 (Web, Data JPA, Validation, Security), JJWT, Lombok, Maven |
 | Banco     | PostgreSQL 17 (via Docker Compose) |
 | Frontend  | React 19, TypeScript, Vite 7, React Router 7, TanStack Query 5, Axios, Lucide |
-| Qualidade | ESLint + typescript-eslint, TypeScript `strict` |
+| Qualidade | ESLint + typescript-eslint, TypeScript `strict`, Playwright (E2E) |
 
 ## Como rodar
 
@@ -133,6 +134,22 @@ No frontend:
 | Variável       | Padrão                  | Descrição |
 |----------------|-------------------------|-----------|
 | `VITE_API_URL` | `http://localhost:8080` | URL base da API |
+
+## Testes end-to-end
+
+A suíte em [`e2e/`](e2e) usa [Playwright](https://playwright.dev) e cobre autenticação, obras, documentos, usuários e as permissões de cada papel, testando frontend, backend e banco juntos.
+
+```bash
+docker compose up -d          # o banco precisa estar no ar
+cd e2e
+npm ci
+npx playwright install chromium
+npm test                      # sobe backend (profile dev) e frontend se não estiverem rodando
+```
+
+Outros comandos: `npm run test:ui` (modo interativo), `npm run test:headed` e `npm run report` (relatório HTML).
+
+Cada teste cria os próprios dados pela API com nomes únicos. Por isso a suíte não depende do estado do banco e pode rodar em paralelo. As variáveis aceitas estão em [`e2e/.env.example`](e2e/.env.example).
 
 ## Papéis e permissões
 
@@ -246,6 +263,9 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 │       ├── pages/              # Telas da aplicação
 │       ├── services/           # Chamadas à API por recurso
 │       └── types/              # Tipos espelhando os DTOs da API
+├── e2e/                        # Testes end-to-end (Playwright)
+│   ├── support/                # Cliente da API para preparar dados e fixtures
+│   └── tests/                  # Specs por funcionalidade
 ├── scripts/seed-dev.sh         # Dados de demonstração
 └── docker-compose.yml          # PostgreSQL para desenvolvimento
 ```
@@ -257,7 +277,8 @@ Todas as rotas, exceto `POST /auth/login`, exigem o cabeçalho `Authorization: B
 - [ ] Endpoints para vincular e desvincular usuários de uma obra
 - [ ] Upload real de arquivos (S3 ou armazenamento local)
 - [ ] Migrações versionadas com Flyway
-- [ ] Testes automatizados (JUnit + Testcontainers, Vitest)
+- [x] Testes end-to-end (Playwright)
+- [ ] Testes de backend (JUnit + Testcontainers) e unitários do frontend (Vitest)
 - [ ] Documentação OpenAPI/Swagger
 - [ ] Pipeline de CI (build, lint e testes)
 - [ ] Paginação nas listagens
