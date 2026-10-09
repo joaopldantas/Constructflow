@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { Building2, FileCheck2, ShieldCheck } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
 import { Button, FormAlert, InputField } from '@/components/ui'
@@ -10,8 +9,6 @@ import { toApiError } from '@/lib/api'
 export function LoginPage() {
   useDocumentTitle('Entrar')
   const { entrar } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState<string | null>(null)
@@ -26,9 +23,8 @@ export function LoginPage() {
     setErro(null)
     setEnviando(true)
     try {
+      // O redirecionamento acontece em PublicOnlyRoute assim que o usuário é carregado.
       await entrar({ email: email.trim(), senha })
-      const destino = (location.state as { from?: string } | null)?.from ?? '/'
-      navigate(destino, { replace: true })
     } catch (error) {
       setErro(toApiError(error, 'Email ou senha inválidos.').message)
     } finally {

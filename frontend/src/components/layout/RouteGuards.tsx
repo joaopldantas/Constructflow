@@ -14,8 +14,14 @@ export function ProtectedRoute() {
 
 export function PublicOnlyRoute() {
   const { usuario, carregando } = useAuth()
+  const location = useLocation()
+
   if (carregando) return <PageLoader />
-  return usuario ? <Navigate to="/" replace /> : <Outlet />
+  if (!usuario) return <Outlet />
+
+  // Após o login, volta para a página que o usuário tentou acessar.
+  const destino = (location.state as { from?: string } | null)?.from ?? '/'
+  return <Navigate to={destino} replace />
 }
 
 export function PermissionRoute({ allow }: { allow: (usuario: Usuario) => boolean }) {
